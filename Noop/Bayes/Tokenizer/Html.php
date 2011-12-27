@@ -16,6 +16,7 @@ class Html extends String
     const POLICY_TITLES = 4;
     const POLICY_IMAGES = 8;
     const POLICY_TEXTS = 16;
+    const POLICY_LINKS = 32;
     
     /**
      * Built-in parser policies
@@ -29,7 +30,8 @@ class Html extends String
             '//h2', '//h3', '//h4', '//h5', '//h6'),
         self::POLICY_TITLES => array('//@title'),
         self::POLICY_IMAGES => array('//img[@alt]/@alt'),
-        self::POLICY_TEXTS => array('//p', '//span', '//div', '//b', '//i')
+        self::POLICY_TEXTS => array('//p', '//span', '//div', '//b', '//i'),
+        self::POLICY_LINKS => array('//a')
     );
     
     /**

@@ -33,6 +33,8 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
                         <span>Some text too!</span>
                         <img alt="cat image" title="cat image title"/>
                     </p>
+                    
+                    <a href="google.com">go to google</a>
                 </body>
             </html>';
         
@@ -58,6 +60,11 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_TEXTS);
         
         $this->assertEquals(array('lorem' => 1, 'ipsum' => 1, 'text' => 1),
+                $tokenizer->tokenize($html)->toArray());
+        
+        $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_LINKS);
+        
+        $this->assertEquals(array('go' => 1, 'to' => 1, 'google' => 1),
                 $tokenizer->tokenize($html)->toArray());
         
         $tokenizer->setTokenPaths(array('//title'));
