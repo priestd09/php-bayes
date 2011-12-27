@@ -14,4 +14,55 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($tokenizer->tokenize('А если utf-8?')->toArray(),
                 array('а' => 1, 'если' => 1, 'utf' => 1));
     }
+    
+    public function testHtmlTokenizer()
+    {
+        $tokenizer = new Noop\Bayes\Tokenizer\Html();
+        
+        $html = '<html>
+                    <head>
+                        <title>This is some cool site</title>
+                        <meta name="keywords" content="cool, site, very cool"/>
+                        <meta name="description" content="Uber cool site, I swear!"/>
+                    </head>
+                <body>
+                    <h1>This is some text that shouldn\'t be taken in account.</h1>
+                    
+                    <p title="text paragraph">
+                        lorem ipsum text
+                        <span>Some text too!</span>
+                        <img alt="cat image" title="cat image title"/>
+                    </p>
+                </body>
+            </html>';
+        
+        // we use default settings indexing name, description and title
+        $this->assertEquals($tokenizer->tokenize($html)->toArray(),
+                array('this' => 1, 'is' => 1, 'some' => 1, 'cool' => 4, 'site' => 3, 'uber' => 1, 'i' => 1, 'swear' => 1, 'very' => 1));
+        
+        $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_HEADERS);
+        
+        $this->assertEquals($tokenizer->tokenize($html)->toArray(),
+                array('this' => 1, 'is' => 1, 'some' => 1, 'text' => 1, 'that' => 1, 'shouldn' => 1, 't' => 1, 'be' => 1, 'taken' => 1, 'in' => 1, 'account' => 1));
+        
+        $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_TITLES);
+        
+        $this->assertEquals($tokenizer->tokenize($html)->toArray(),
+                array('text' => 1, 'paragraph' => 1, 'cat' => 1, 'image' => 1, 'title' => 1));
+        
+        $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_IMAGES);
+        
+        $this->assertEquals($tokenizer->tokenize($html)->toArray(),
+                array('cat' => 1, 'image' => 1));
+        
+        $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_TEXTS);
+        
+        $this->assertEquals(array('lorem' => 1, 'ipsum' => 1, 'text' => 1),
+                $tokenizer->tokenize($html)->toArray());
+        
+        $tokenizer->setTokenPaths(array('//title'));
+        
+        $this->assertEquals($tokenizer->tokenize($html)->toArray(),
+                array('this' => 1, 'is' => 1, 'some' => 1, 'cool' => 1, 'site' => 1));
+    }
 }
