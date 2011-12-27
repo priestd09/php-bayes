@@ -78,6 +78,10 @@ class TokenArray implements \ArrayAccess, \Countable
         $this->tokenCount = array_sum($tokens);
     }
     
+    /**
+     * Gets token count
+     * @return int
+     */
     public function getTokenCount()
     {
         return $this->tokenCount;
