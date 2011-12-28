@@ -1,8 +1,12 @@
 <?php
 
-namespace Noop\Bayes;
+/**
+ * MIT licensed
+ */
+
+namespace Noop\Bayes\Dictionary;
 
 class Dictionary
 {
-    
+
 }
