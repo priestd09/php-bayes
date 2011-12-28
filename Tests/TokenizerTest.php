@@ -22,7 +22,7 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $html = '<html>
                     <head>
                         <title>This is some cool site</title>
-                        <meta name="keywords" content="cool, site, very cool"/>
+                        <meta name="keywords" content="cool, site, very cool, seo text"/>
                         <meta name="description" content="Uber cool site, I swear!"/>
                         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
                     </head>
@@ -41,8 +41,9 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
             </html>';
 
         // we use default settings indexing name, description and title
+        // this is POLICY_META
         $this->assertEquals($tokenizer->tokenize($html)->toArray(),
-                array('this' => 1, 'is' => 1, 'some' => 1, 'cool' => 4, 'site' => 3, 'uber' => 1, 'i' => 1, 'swear' => 1, 'very' => 1));
+                array('this' => 1, 'is' => 1, 'some' => 1, 'cool' => 4, 'site' => 3, 'uber' => 1, 'i' => 1, 'swear' => 1, 'very' => 1, 'seo' => 1, 'text' => 1));
 
         $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_HEADERS);
 
@@ -67,6 +68,11 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_LINKS);
 
         $this->assertEquals(array('go' => 1, 'to' => 1, 'google' => 1),
+                $tokenizer->tokenize($html)->toArray());
+
+        $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_TEXTS | Noop\Bayes\Tokenizer\Html::POLICY_METAS);
+
+        $this->assertEquals(array('this' => 1, 'is' => 1, 'some' => 1, 'cool' => 4, 'site' => 3, 'uber' => 1, 'i' => 1, 'swear' => 1, 'very' => 1, 'lorem' => 1, 'ipsum' => 1, 'text' => 2, 'unicode' => 1, 'тест' => 1, 'seo' => 1),
                 $tokenizer->tokenize($html)->toArray());
 
         $tokenizer->setTokenPaths(array('//title'));
