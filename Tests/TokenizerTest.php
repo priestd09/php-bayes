@@ -1,7 +1,7 @@
 <?php
 
 require_once(__DIR__.'/../autoload.php');
-
+//TODO: nested tags policy
 class TokenizerTest extends \PHPUnit_Framework_TestCase
 {
     public function testStringTokenizer()
