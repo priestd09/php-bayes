@@ -90,12 +90,10 @@ class Html extends String
                 $tagNode = $tags->item($i);
 
                 foreach ($tagNode->childNodes as $childNode) {
-                    if (!$childNode instanceof \DOMText) {
-                        $tagNode->removeChild($childNode);
+                    if ($childNode instanceof \DOMText) {
+                        $texts[] = $tagNode->nodeValue;
                     }
                 }
-
-                $texts[] = $tagNode->nodeValue;
             }
         }
 
