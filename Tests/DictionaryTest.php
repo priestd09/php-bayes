@@ -26,7 +26,25 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
 
     public function testSaving()
     {
+        $d = new Noop\Bayes\Dictionary\Dictionary();
+        $t = new Noop\Bayes\Token\TokenArray();
+        $t->fromArray(array('foo' => 1, 'bar' => 2, 'buzz' => 3));
 
+        $d->addTokens($t);
+
+        $file = tempnam(sys_get_temp_dir(), 'noop_bayes');
+
+        $this->assertEquals(array('foo' => array('count' => 1, 'weight' => 1/6),
+            'bar' => array('count' => 2, 'weight' => 1/3),
+            'buzz' => array('count' => 3, 'weight' => 1/2)), $d->dump());
+
+        file_put_contents($file, serialize($d));
+
+        $d2 = unserialize(file_get_contents($file));
+
+        $this->assertEquals(array('foo' => array('count' => 1, 'weight' => 1/6),
+            'bar' => array('count' => 2, 'weight' => 1/3),
+            'buzz' => array('count' => 3, 'weight' => 1/2)), $d2->dump());
     }
 
     public function testMatch()
