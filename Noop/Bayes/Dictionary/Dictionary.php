@@ -15,10 +15,24 @@ class Dictionary implements \Serializable
      * @var array
      */
     protected $dictionary;
+    
+    /**
+     * Current document count
+     * @var int
+     */
+    protected $documentCount;
+    
+    /**
+     * Minimal frequency in document for token to be included.
+     * For example, if this is 0.1, then all tokens found in less than 1 doc of
+     * 10 will be not taken in account
+     * @var double
+     */
+    protected $minimalFrequencyInDocuments;
 
     /**
      * Dictionary size
-     * @var int
+     * @var integer
      */
     protected $tokenCount;
 
@@ -26,6 +40,7 @@ class Dictionary implements \Serializable
     {
         $this->dictionary = array();
         $this->tokenCount = 0;
+        $this->minimalFrequencyInDocuments = 0.05;
     }
 
     /**
@@ -41,6 +56,8 @@ class Dictionary implements \Serializable
                 $this->dictionary[$token]['count'] = $count;
             }
         }
+        
+        $this->documentCount ++;
 
         $this->recount();
     }
@@ -60,6 +77,8 @@ class Dictionary implements \Serializable
                 }
             }
         }
+        
+        $this->documentCount--;
 
         $this->recount();
     }
@@ -77,8 +96,23 @@ class Dictionary implements \Serializable
 
         // count weights
         foreach ($this->dictionary as $token => $data) {
+            // skip tokens that are less popular than $minimalFrequencyInDocs
+            if($this->data['count'] / $this->documentCount < $this->getMinimalFrequencyInDocuments()) {
+                continue;
+            }
+            
             $this->dictionary[$token]['weight'] = $data['count'] / $this->tokenCount;
         }
+        
+        $this->normalize();
+    }
+    
+    /**
+     * Normalizes frequences
+     */
+    protected function normalize()
+    {
+        
     }
 
     /**
@@ -106,7 +140,7 @@ class Dictionary implements \Serializable
     /**
      * Matches disctionary against tokens
      * @param TokenArray $tokens
-     * @return float
+     * @return double
      */
     public function match(TokenArray $tokens)
     {
@@ -122,5 +156,45 @@ class Dictionary implements \Serializable
         }
 
         return 1 / ( 1 + $poly);
+    }
+    
+    /**
+     * Gets document count
+     * @return integer
+     */
+    public function getDocumentCount()
+    {
+        return $this->documentCount;
+    }
+
+    /**
+     * Sets document count
+     * @param integer $documentCount 
+     */
+    public function setDocumentCount($documentCount)
+    {
+        $this->documentCount = $documentCount;
+    }
+
+    /**
+     * Gets minimal frequency in document for token to be included.
+     * For example, if this is 0.1, then all tokens found in less than 1 doc of
+     * 10 will be not taken in account
+     * @return double
+     */
+    public function getMinimalFrequencyInDocuments()
+    {
+        return $this->minimalFrequencyInDocuments;
+    }
+
+    /**
+     * Sets minimal frequency in document for token to be included.
+     * For example, if this is 0.1, then all tokens found in less than 1 doc of
+     * 10 will be not taken in account
+     * @var double $minimalFrequencyInDocuments
+     */
+    public function setMinimalFrequencyInDocuments($minimalFrequencyInDocuments)
+    {
+        $this->minimalFrequencyInDocuments = $minimalFrequencyInDocuments;
     }
 }

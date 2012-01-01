@@ -62,7 +62,7 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
         $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_TEXTS);
 
-        $this->assertEquals(array('lorem' => 1, 'ipsum' => 1, 'text' => 1, 'unicode' => 1, 'тест' => 1),
+        $this->assertEquals(array('lorem' => 1, 'ipsum' => 1, 'text' => 2, 'unicode' => 1, 'тест' => 1, 'some' => 1, 'too' => 1),
                 $tokenizer->tokenize($html)->toArray());
 
         $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_LINKS);
