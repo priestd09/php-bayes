@@ -15,13 +15,13 @@ class Dictionary implements \Serializable
      * @var array
      */
     protected $dictionary;
-    
+
     /**
      * Current document count
      * @var int
      */
     protected $documentCount;
-    
+
     /**
      * Minimal frequency in document for token to be included.
      * For example, if this is 0.1, then all tokens found in less than 1 doc of
@@ -56,7 +56,7 @@ class Dictionary implements \Serializable
                 $this->dictionary[$token]['count'] = $count;
             }
         }
-        
+
         $this->documentCount ++;
 
         $this->recount();
@@ -77,7 +77,7 @@ class Dictionary implements \Serializable
                 }
             }
         }
-        
+
         $this->documentCount--;
 
         $this->recount();
@@ -97,22 +97,22 @@ class Dictionary implements \Serializable
         // count weights
         foreach ($this->dictionary as $token => $data) {
             // skip tokens that are less popular than $minimalFrequencyInDocs
-            if($this->data['count'] / $this->documentCount < $this->getMinimalFrequencyInDocuments()) {
+            if($data['count'] / $this->documentCount < $this->getMinimalFrequencyInDocuments()) {
                 continue;
             }
-            
+
             $this->dictionary[$token]['weight'] = $data['count'] / $this->tokenCount;
         }
-        
+
         $this->normalize();
     }
-    
+
     /**
      * Normalizes frequences
      */
     protected function normalize()
     {
-        
+
     }
 
     /**
@@ -157,7 +157,7 @@ class Dictionary implements \Serializable
 
         return 1 / ( 1 + $poly);
     }
-    
+
     /**
      * Gets document count
      * @return integer
@@ -169,7 +169,7 @@ class Dictionary implements \Serializable
 
     /**
      * Sets document count
-     * @param integer $documentCount 
+     * @param integer $documentCount
      */
     public function setDocumentCount($documentCount)
     {

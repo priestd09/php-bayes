@@ -72,7 +72,8 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
         $tokenizer->setPolicy(Noop\Bayes\Tokenizer\Html::POLICY_TEXTS | Noop\Bayes\Tokenizer\Html::POLICY_METAS);
 
-        $this->assertEquals(array('this' => 1, 'is' => 1, 'some' => 1, 'cool' => 4, 'site' => 3, 'uber' => 1, 'i' => 1, 'swear' => 1, 'very' => 1, 'lorem' => 1, 'ipsum' => 1, 'text' => 2, 'unicode' => 1, 'тест' => 1, 'seo' => 1),
+        $this->assertEquals(array('this' => 1, 'is' => 1, 'some' => 2, 'cool' => 4, 'site' => 3, 'uber' => 1, 'i' => 1, 'swear' => 1, 'very' => 1,
+            'lorem' => 1, 'ipsum' => 1, 'text' => 3, 'unicode' => 1, 'тест' => 1, 'seo' => 1, 'too' => 1),
                 $tokenizer->tokenize($html)->toArray());
 
         $tokenizer->setTokenPaths(array('//title'));

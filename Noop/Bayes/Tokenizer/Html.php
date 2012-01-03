@@ -86,12 +86,11 @@ class Html extends String
         foreach ($this->getTokenPaths() as $path) {
             $tags = $xpath->query($path);
             for ($i = 0; $i < $tags->length; $i ++) {
-                // remove children instead of text so they dont mess
                 $tagNode = $tags->item($i);
 
                 foreach ($tagNode->childNodes as $childNode) {
                     if ($childNode instanceof \DOMText) {
-                        $texts[] = $tagNode->nodeValue;
+                        $texts[] = $childNode->nodeValue;
                     }
                 }
             }
