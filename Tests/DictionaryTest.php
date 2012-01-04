@@ -78,4 +78,21 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
     {
         //todo
     }
+
+    public function testNormalizeAndLengths()
+    {
+        $d = new \Noop\Bayes\Dictionary\Dictionary;
+        $t = new Noop\Bayes\Token\TokenArray;
+
+        $t->fromArray(array('a' => 6, 'b' => 10, 'caad' => 12, 'baad' => 13, 'asfgerrybbewaaadfasdfsadfadsfca' => 7));
+
+       //a,b, and that long token should have zero weight with default min/max lengths
+        $d->addTokens($t);
+
+        $this->assertEquals(array('a' => array('count' => 6, 'weight' => 0),
+            'b' => array('count' => 10, 'weight' => 0),
+            'caad' => array('count' => 12, 'weight' => 12/25),
+            'baad' => array('count' => 13, 'weight' => 13/25),
+            'asfgerrybbewaaadfasdfsadfadsfca' => array('count' => 7, 'weight' => 0)), $d->dump());
+    }
 }

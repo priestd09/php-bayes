@@ -54,6 +54,12 @@ class Dictionary implements \Serializable
      */
     protected $tokenCount;
 
+    /**
+     * Usable token count (not filtered by length, stemmer or so on)
+     * @var integer
+     */
+    protected $usableTokenCount;
+
     public function __construct()
     {
         $this->dictionary = array();
@@ -116,8 +122,10 @@ class Dictionary implements \Serializable
                     return $value['count'] + $previous;
                 }, 0);
 
-        // count weights
-        foreach ($this->dictionary as $token => $data) {
+        $this->usableTokenCount = 0;
+
+        // check tokens
+        foreach (array_keys($this->dictionary) as $token) {
 
             // skip tokens that are less popular than $minimalFrequencyInDocs, of applicable
             if($this->useDocumentCount() && $this->getDocumentCount() > 0) {
@@ -134,18 +142,17 @@ class Dictionary implements \Serializable
                 continue;
             }
 
-            $this->dictionary[$token]['weight'] = $data['count'] / $this->tokenCount;
+            // this is temporary value before normalization
+            $this->dictionary[$token]['weight'] = 1;
+            $this->usableTokenCount += $this->dictionary[$token]['count'];
         }
-
-        $this->normalize();
-    }
-
-    /**
-     * Normalizes frequences
-     */
-    protected function normalize()
-    {
-
+        
+        // recount weights
+        foreach (array_keys($this->dictionary) as $token) {
+            if (1 == $this->dictionary[$token]['weight']) {
+                $this->dictionary[$token]['weight'] = $this->dictionary[$token]['count'] / $this->usableTokenCount;
+            }
+        }
     }
 
     /**
@@ -287,6 +294,24 @@ class Dictionary implements \Serializable
     public function setMaximalTokenLength($maximalTokenLength)
     {
         $this->maximalTokenLength = $maximalTokenLength;
+    }
+
+    /**
+     * Gets total token count
+     * @return integer
+     */
+    public function getTokenCount()
+    {
+        return $this->tokenCount;
+    }
+
+    /**
+     * Gets usable token count (not filtered by length, stemmer and so on)
+     * @return integer
+     */
+    public function getUsableTokenCount()
+    {
+        return $this->usableTokenCount;
     }
 
 
