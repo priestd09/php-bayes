@@ -224,6 +224,9 @@ class Dictionary implements \Serializable
     public function setDocumentCount($documentCount)
     {
         $this->documentCount = $documentCount;
+        if ($this->useDocumentCount()) {
+            $this->recount();
+        }
     }
 
     /**
@@ -246,6 +249,10 @@ class Dictionary implements \Serializable
     public function setMinimalFrequencyInDocuments($minimalFrequencyInDocuments)
     {
         $this->minimalFrequencyInDocuments = $minimalFrequencyInDocuments;
+
+        if ($this->useDocumentCount()) {
+            $this->recount();
+        }
     }
 
     /**
@@ -257,6 +264,7 @@ class Dictionary implements \Serializable
     {
         if(is_bool($use)) {
             $this->useDocumentCount = $use;
+            $this->recount();
         } else {
             return $this->useDocumentCount;
         }
@@ -278,6 +286,7 @@ class Dictionary implements \Serializable
     public function setMinimalTokenLength($minimalTokenLength)
     {
         $this->minimalTokenLength = $minimalTokenLength;
+        $this->recount();
     }
 
     /**
@@ -296,6 +305,7 @@ class Dictionary implements \Serializable
     public function setMaximalTokenLength($maximalTokenLength)
     {
         $this->maximalTokenLength = $maximalTokenLength;
+        $this->recount();
     }
 
     /**
