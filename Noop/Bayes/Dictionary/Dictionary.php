@@ -146,7 +146,7 @@ class Dictionary implements \Serializable
             $this->dictionary[$token]['weight'] = 1;
             $this->usableTokenCount += $this->dictionary[$token]['count'];
         }
-        
+
         // recount weights
         foreach (array_keys($this->dictionary) as $token) {
             if (1 == $this->dictionary[$token]['weight']) {
@@ -192,18 +192,20 @@ class Dictionary implements \Serializable
      */
     public function match(TokenArray $tokens)
     {
-        $poly = 1;
+        $poly = array();
 
         foreach ($tokens as $token => $count) {
 
             if(isset($this->dictionary[$token])) {
                 $weight = $this->dictionary[$token]['weight'];
 
-                $poly = $poly * (1 - $weight);
+                if ($weight != 0) {
+                    $poly[] = log(1 - $weight, M_E);
+                }
             }
         }
 
-        return 1 / ( 1 + $poly);
+        return 1 / ( 1 + pow(M_E, array_sum($poly)));
     }
 
     /**
