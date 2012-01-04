@@ -94,5 +94,21 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
             'caad' => array('count' => 12, 'weight' => 12/25),
             'baad' => array('count' => 13, 'weight' => 13/25),
             'asfgerrybbewaaadfasdfsadfadsfca' => array('count' => 7, 'weight' => 0)), $d->dump());
+
+        $d->setMinimalTokenLength(0);
+
+        $this->assertEquals(array('a' => array('count' => 6, 'weight' => 6/41),
+            'b' => array('count' => 10, 'weight' => 10/41),
+            'caad' => array('count' => 12, 'weight' => 12/41),
+            'baad' => array('count' => 13, 'weight' => 13/41),
+            'asfgerrybbewaaadfasdfsadfadsfca' => array('count' => 7, 'weight' => 0)), $d->dump());
+
+        $d->setMaximalTokenLength(100);
+
+        $this->assertEquals(array('a' => array('count' => 6, 'weight' => 6/48),
+            'b' => array('count' => 10, 'weight' => 10/48),
+            'caad' => array('count' => 12, 'weight' => 12/48),
+            'baad' => array('count' => 13, 'weight' => 13/48),
+            'asfgerrybbewaaadfasdfsadfadsfca' => array('count' => 7, 'weight' => 7/48)), $d->dump());
     }
 }
