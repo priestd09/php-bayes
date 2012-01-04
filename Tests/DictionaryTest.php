@@ -73,4 +73,9 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($p > 0.7);
     }
+
+    public function testSerialize()
+    {
+        //todo
+    }
 }

@@ -18,7 +18,7 @@ class Dictionary implements \Serializable
 
     /**
      * Current document count
-     * @var int
+     * @var integer
      */
     protected $documentCount;
 
@@ -31,6 +31,24 @@ class Dictionary implements \Serializable
     protected $minimalFrequencyInDocuments;
 
     /**
+     * Whether to use $minimalFrequencyInDocuments
+     * @var boolean
+     */
+    protected $useDocumentCount;
+
+    /**
+     * Minimal token length to be processed
+     * @var integer
+     */
+    protected $minimalTokenLength;
+
+    /**
+     * Maximal token length to be processed
+     * @var integer
+     */
+    protected $maximalTokenLength;
+
+    /**
      * Dictionary size
      * @var integer
      */
@@ -40,7 +58,11 @@ class Dictionary implements \Serializable
     {
         $this->dictionary = array();
         $this->tokenCount = 0;
+        $this->documentCount = 0;
         $this->minimalFrequencyInDocuments = 0.05;
+        $this->useDocumentCount(false);
+        $this->minimalTokenLength = 3;
+        $this->maximalTokenLength = 16;
     }
 
     /**
@@ -96,8 +118,19 @@ class Dictionary implements \Serializable
 
         // count weights
         foreach ($this->dictionary as $token => $data) {
-            // skip tokens that are less popular than $minimalFrequencyInDocs
-            if($data['count'] / $this->documentCount < $this->getMinimalFrequencyInDocuments()) {
+
+            // skip tokens that are less popular than $minimalFrequencyInDocs, of applicable
+            if($this->useDocumentCount() && $this->getDocumentCount() > 0) {
+                if($data['count'] / $this->documentCount < $this->getMinimalFrequencyInDocuments()) {
+                    $this->dictionary[$token]['weight'] = 0;
+                    continue;
+                }
+            }
+
+            // max/min token length
+            if(mb_strlen($token) > $this->getMaximalTokenLength() ||
+                    mb_strlen($token) < $this->getMinimalTokenLength()) {
+                $this->dictionary[$token]['weight'] = 0;
                 continue;
             }
 
@@ -126,13 +159,21 @@ class Dictionary implements \Serializable
 
     public function serialize()
     {
-        return serialize(array('dic' => $this->dictionary));
+        return serialize(array('dic' => $this->dictionary,
+            'document_count' => $this->getDocumentCount(),
+            'use_document_count' => $this->useDocumentCount,
+            'minimal_token_length' => $this->getMinimalTokenLength(),
+            'maximal_token_length' => $this->getMaximalTokenLength()));
     }
 
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
         $this->dictionary = $data['dic'];
+        $this->setDocumentCount($data['document_count']);
+        $this->useDocumentCount($data['use_document_count']);
+        $this->setMinimalTokenLength($data['minimal_token_length']);
+        $this->setMaximalTokenLength($data['maximal_token_length']);
 
         $this->recount();
     }
@@ -197,4 +238,56 @@ class Dictionary implements \Serializable
     {
         $this->minimalFrequencyInDocuments = $minimalFrequencyInDocuments;
     }
+
+    /**
+     * Sets / gets flag indicating usage of $minimalFrequencyInDocuments
+     * @param boolean $use
+     * @return boolean
+     */
+    public function useDocumentCount($use = null)
+    {
+        if(is_bool($use)) {
+            $this->useDocumentCount = $use;
+        } else {
+            return $this->useDocumentCount;
+        }
+    }
+
+    /**
+     * Gets minimal token length
+     * @return integer
+     */
+    public function getMinimalTokenLength()
+    {
+        return $this->minimalTokenLength;
+    }
+
+    /**
+     * Sets minimal token length
+     * @param integer $minimalTokenLength
+     */
+    public function setMinimalTokenLength($minimalTokenLength)
+    {
+        $this->minimalTokenLength = $minimalTokenLength;
+    }
+
+    /**
+     * Gets maximal token length
+     * @return integer
+     */
+    public function getMaximalTokenLength()
+    {
+        return $this->maximalTokenLength;
+    }
+
+    /**
+     * Sets maximal token length
+     * @param integer $maximalTokenLength
+     */
+    public function setMaximalTokenLength($maximalTokenLength)
+    {
+        $this->maximalTokenLength = $maximalTokenLength;
+    }
+
+
 }
