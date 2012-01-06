@@ -60,6 +60,12 @@ class Dictionary implements \Serializable
      */
     protected $usableTokenCount;
 
+    /**
+     * Stopwords array
+     * @var array
+     */
+    protected $stopwords;
+
     public function __construct()
     {
         $this->dictionary = array();
@@ -69,6 +75,19 @@ class Dictionary implements \Serializable
         $this->useDocumentCount(false);
         $this->minimalTokenLength = 3;
         $this->maximalTokenLength = 16;
+        $this->stopwords = array();
+    }
+
+    /**
+     * Load stopwords from files
+     * @param array $codes
+     */
+    public function loadStopwords($codes)
+    {
+        foreach ($codes as $code) {
+            $file = __DIR__.'/Stopwords/'.$code.'.txt';
+            
+        }
     }
 
     /**

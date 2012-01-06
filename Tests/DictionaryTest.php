@@ -126,4 +126,24 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
             'baad' => array('count' => 13, 'weight' => 13/48),
             'asfgerrybbewaaadfasdfsadfadsfca' => array('count' => 7, 'weight' => 7/48)), $d->dump());
     }
+
+
+    public function testStopwords()
+    {
+        $d = new Noop\Bayes\Dictionary\Dictionary();
+        $ts = new Noop\Bayes\Tokenizer\String();
+
+        $d->loadStopwords(array('en', 'ru'));
+        $d->setMaximalTokenLength(1000);
+        $d->setMinimalTokenLength(0);
+
+        $d->addTokens($ts->tokenize('As at so believe account evening behaved hearted is.'));
+
+        $this->assertEquals(array('believe' => array('count' => 1, 'weight' => 1/5),
+            'account' => array('count' => 1, 'weight' => 1/5),
+            'evening' => array('count' => 1, 'weight' => 1/5),
+            'behaved' => array('count' => 1, 'weight' => 1/5),
+            'hearted' => array('count' => 1, 'weight' => 1/5)), $d->dump());
+    }
+
 }
