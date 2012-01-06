@@ -76,7 +76,22 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
 
     public function testSerialize()
     {
-        //todo
+        $d = new Noop\Bayes\Dictionary\Dictionary();
+        $t = new Noop\Bayes\Token\TokenArray();
+
+        $t->fromArray(array('foo' => 1, 'bar' => 2, 'buzz' => 3));
+        $d->addTokens($t);
+
+        $x = serialize($d);
+        $x = unserialize($x);
+
+        $this->assertEquals($d->getDocumentCount(), $x->getDocumentCount());
+        $this->assertEquals($d->getMaximalTokenLength(), $x->getMaximalTokenLength());
+        $this->assertEquals($d->getMinimalTokenLength(), $x->getMinimalTokenLength());
+        $this->assertEquals($d->getTokenCount(), $x->getTokenCount());
+        $this->assertEquals($d->getUsableTokenCount(), $x->getUsableTokenCount());
+        $this->assertEquals($d->useDocumentCount(), $x->useDocumentCount());
+        $this->assertEquals($d->dump(), $x->dump());
     }
 
     public function testNormalizeAndLengths()
