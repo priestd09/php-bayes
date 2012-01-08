@@ -100,6 +100,8 @@ class Dictionary implements \Serializable
                         array_keys($st->tokenize($string)->toArray()));
             }
         }
+        
+        $this->recount();
     }
 
     /**
