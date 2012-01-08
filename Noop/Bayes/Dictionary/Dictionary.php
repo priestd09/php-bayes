@@ -7,6 +7,7 @@
 namespace Noop\Bayes\Dictionary;
 
 use Noop\Bayes\Token\TokenArray;
+use Noop\Bayes\Tokenizer\String;
 
 class Dictionary implements \Serializable
 {
@@ -84,9 +85,20 @@ class Dictionary implements \Serializable
      */
     public function loadStopwords($codes)
     {
+        $this->stopwords = array();
+        
         foreach ($codes as $code) {
             $file = __DIR__.'/Stopwords/'.$code.'.txt';
             
+            if (!is_readable($file)) {
+                throw new \RuntimeException(sprintf('Stopword file "%s" failed to load', $file));
+            } else {
+                $string = file_get_contents($file);
+                
+                $st = new String();
+                $this->stopwords = array_merge($this->stopwords,
+                        array_keys($st->tokenize($string)->toArray()));
+            }
         }
     }
 
@@ -160,6 +172,12 @@ class Dictionary implements \Serializable
                 $this->dictionary[$token]['weight'] = 0;
                 continue;
             }
+            
+            // skip stopwords
+            if (in_array($token, $this->stopwords)) {
+                $this->dictionary[$token]['weight'] = 0;
+                continue;
+            }
 
             // this is temporary value before normalization
             $this->dictionary[$token]['weight'] = 1;
@@ -189,18 +207,24 @@ class Dictionary implements \Serializable
             'document_count' => $this->getDocumentCount(),
             'use_document_count' => $this->useDocumentCount,
             'minimal_token_length' => $this->getMinimalTokenLength(),
-            'maximal_token_length' => $this->getMaximalTokenLength()));
+            'maximal_token_length' => $this->getMaximalTokenLength(),
+            'stopwords' => $this->stopwords));
     }
 
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
+        
+        // set internal arrays
         $this->dictionary = $data['dic'];
+        $this->stopwords = $data['stopwords'];
+        
+        // this calls recount, so data must be filled before setters
         $this->setDocumentCount($data['document_count']);
         $this->useDocumentCount($data['use_document_count']);
         $this->setMinimalTokenLength($data['minimal_token_length']);
         $this->setMaximalTokenLength($data['maximal_token_length']);
-
+        
         $this->recount();
     }
 

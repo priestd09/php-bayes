@@ -45,6 +45,8 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('foo' => array('count' => 1, 'weight' => 1/6),
             'bar' => array('count' => 2, 'weight' => 1/3),
             'buzz' => array('count' => 3, 'weight' => 1/2)), $d2->dump());
+        
+        unlink($file);
     }
 
     public function testMatch()
@@ -143,7 +145,11 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
             'account' => array('count' => 1, 'weight' => 1/5),
             'evening' => array('count' => 1, 'weight' => 1/5),
             'behaved' => array('count' => 1, 'weight' => 1/5),
-            'hearted' => array('count' => 1, 'weight' => 1/5)), $d->dump());
+            'hearted' => array('count' => 1, 'weight' => 1/5),
+            'as' => array('count' => 1, 'weight' => 0),
+            'at' => array('count' => 1, 'weight' => 0),
+            'so' => array('count' => 1, 'weight' => 0),
+            'is' => array('count' => 1, 'weight' => 0)), $d->dump());
     }
 
 }
