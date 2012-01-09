@@ -11,11 +11,21 @@ function xsites_log() {
 
 function xsites_get_dictionary() {
     global $dic;
+
+    $bayes_dic = new Noop\Bayes\Dictionary\Dictionary;
+    $bayes_dic->loadStopwords(array('en'));
+
+    $tokenizer = new Noop\Bayes\Tokenizer\Html;
+    $tokenizer->setPolicy(DICTIONARY_POLICY);
+
     // use half of sites
-    
     foreach (array_slice($dic, 0, floor(count($dic)/2)) as $site) {
         $contents = xsites_get_site($site);
+
+        $bayes_dic->addTokens($tokenizer->tokenize($contents));
     }
+
+    return $bayes_dic;
 }
 
 function xsites_get_site($url) {
