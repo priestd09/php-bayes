@@ -95,7 +95,7 @@ or
 other
 ought
 our
-ours 
+ours
 ourselves
 out
 over
@@ -172,3 +172,17 @@ your
 yours
 yourself
 yourselves
+internet
+www
+com
+personal
+web
+site
+find
+offers
+root
+now
+shop
+full
+check
+website

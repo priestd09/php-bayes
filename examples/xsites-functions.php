@@ -22,7 +22,9 @@ function xsites_get_dictionary() {
     foreach (array_slice($dic, 0, floor(count($dic)/2)) as $site) {
         $contents = xsites_get_site($site);
 
-        $bayes_dic->addTokens($tokenizer->tokenize($contents));
+        if($contents != '') {
+            $bayes_dic->addTokens($tokenizer->tokenize($contents));
+        }
     }
 
     return $bayes_dic;

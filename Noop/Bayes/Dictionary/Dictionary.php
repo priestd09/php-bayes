@@ -86,21 +86,21 @@ class Dictionary implements \Serializable
     public function loadStopwords($codes)
     {
         $this->stopwords = array();
-        
+
         foreach ($codes as $code) {
             $file = __DIR__.'/Stopwords/'.$code.'.txt';
-            
+
             if (!is_readable($file)) {
                 throw new \RuntimeException(sprintf('Stopword file "%s" failed to load', $file));
             } else {
                 $string = file_get_contents($file);
-                
+
                 $st = new String();
                 $this->stopwords = array_merge($this->stopwords,
                         array_keys($st->tokenize($string)->toArray()));
             }
         }
-        
+
         $this->recount();
     }
 
@@ -162,7 +162,7 @@ class Dictionary implements \Serializable
 
             // skip tokens that are less popular than $minimalFrequencyInDocs, of applicable
             if($this->useDocumentCount() && $this->getDocumentCount() > 0) {
-                if($data['count'] / $this->documentCount < $this->getMinimalFrequencyInDocuments()) {
+                if($this->dictionary[$token]['count'] / $this->documentCount < $this->getMinimalFrequencyInDocuments()) {
                     $this->dictionary[$token]['weight'] = 0;
                     continue;
                 }
@@ -174,7 +174,7 @@ class Dictionary implements \Serializable
                 $this->dictionary[$token]['weight'] = 0;
                 continue;
             }
-            
+
             // skip stopwords
             if (in_array($token, $this->stopwords)) {
                 $this->dictionary[$token]['weight'] = 0;
@@ -216,17 +216,17 @@ class Dictionary implements \Serializable
     public function unserialize($serialized)
     {
         $data = unserialize($serialized);
-        
+
         // set internal arrays
         $this->dictionary = $data['dic'];
         $this->stopwords = $data['stopwords'];
-        
+
         // this calls recount, so data must be filled before setters
         $this->setDocumentCount($data['document_count']);
         $this->useDocumentCount($data['use_document_count']);
         $this->setMinimalTokenLength($data['minimal_token_length']);
         $this->setMaximalTokenLength($data['maximal_token_length']);
-        
+
         $this->recount();
     }
 
@@ -243,7 +243,7 @@ class Dictionary implements \Serializable
 
             if(isset($this->dictionary[$token])) {
                 $weight = $this->dictionary[$token]['weight'];
-
+print "Matched $token $weight\n";
                 if ($weight != 0) {
                     $poly[] = log(1 - $weight, M_E);
                 }
