@@ -18,24 +18,12 @@ class Dictionary implements \Serializable
     protected $dictionary;
 
     /**
-     * Current document count
-     * @var integer
-     */
-    protected $documentCount;
-
-    /**
      * Minimal frequency in document for token to be included.
      * For example, if this is 0.1, then all tokens found in less than 1 doc of
      * 10 will be not taken in account
      * @var double
      */
     protected $minimalFrequencyInDocuments;
-
-    /**
-     * Whether to use $minimalFrequencyInDocuments
-     * @var boolean
-     */
-    protected $useDocumentCount;
 
     /**
      * Minimal token length to be processed
@@ -71,9 +59,7 @@ class Dictionary implements \Serializable
     {
         $this->dictionary = array();
         $this->tokenCount = 0;
-        $this->documentCount = 0;
         $this->minimalFrequencyInDocuments = 0.05;
-        $this->useDocumentCount(false);
         $this->minimalTokenLength = 3;
         $this->maximalTokenLength = 16;
         $this->stopwords = array();
@@ -160,14 +146,6 @@ class Dictionary implements \Serializable
         // check tokens
         foreach (array_keys($this->dictionary) as $token) {
 
-            // skip tokens that are less popular than $minimalFrequencyInDocs, of applicable
-            if($this->useDocumentCount() && $this->getDocumentCount() > 0) {
-                if($this->dictionary[$token]['count'] / $this->documentCount < $this->getMinimalFrequencyInDocuments()) {
-                    $this->dictionary[$token]['weight'] = 0;
-                    continue;
-                }
-            }
-
             // max/min token length
             if(mb_strlen($token) > $this->getMaximalTokenLength() ||
                     mb_strlen($token) < $this->getMinimalTokenLength()) {
@@ -206,8 +184,6 @@ class Dictionary implements \Serializable
     public function serialize()
     {
         return serialize(array('dic' => $this->dictionary,
-            'document_count' => $this->getDocumentCount(),
-            'use_document_count' => $this->useDocumentCount,
             'minimal_token_length' => $this->getMinimalTokenLength(),
             'maximal_token_length' => $this->getMaximalTokenLength(),
             'stopwords' => $this->stopwords));
@@ -222,8 +198,6 @@ class Dictionary implements \Serializable
         $this->stopwords = $data['stopwords'];
 
         // this calls recount, so data must be filled before setters
-        $this->setDocumentCount($data['document_count']);
-        $this->useDocumentCount($data['use_document_count']);
         $this->setMinimalTokenLength($data['minimal_token_length']);
         $this->setMaximalTokenLength($data['maximal_token_length']);
 
@@ -243,7 +217,7 @@ class Dictionary implements \Serializable
 
             if(isset($this->dictionary[$token])) {
                 $weight = $this->dictionary[$token]['weight'];
-print "Matched $token $weight\n";
+
                 if ($weight != 0) {
                     $poly[] = log(1 - $weight, M_E);
                 }
@@ -251,27 +225,6 @@ print "Matched $token $weight\n";
         }
 
         return 1 / ( 1 + pow(M_E, array_sum($poly)));
-    }
-
-    /**
-     * Gets document count
-     * @return integer
-     */
-    public function getDocumentCount()
-    {
-        return $this->documentCount;
-    }
-
-    /**
-     * Sets document count
-     * @param integer $documentCount
-     */
-    public function setDocumentCount($documentCount)
-    {
-        $this->documentCount = $documentCount;
-        if ($this->useDocumentCount()) {
-            $this->recount();
-        }
     }
 
     /**
@@ -297,21 +250,6 @@ print "Matched $token $weight\n";
 
         if ($this->useDocumentCount()) {
             $this->recount();
-        }
-    }
-
-    /**
-     * Sets / gets flag indicating usage of $minimalFrequencyInDocuments
-     * @param boolean $use
-     * @return boolean
-     */
-    public function useDocumentCount($use = null)
-    {
-        if(is_bool($use)) {
-            $this->useDocumentCount = $use;
-            $this->recount();
-        } else {
-            return $this->useDocumentCount;
         }
     }
 

@@ -45,7 +45,7 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('foo' => array('count' => 1, 'weight' => 1/6),
             'bar' => array('count' => 2, 'weight' => 1/3),
             'buzz' => array('count' => 3, 'weight' => 1/2)), $d2->dump());
-        
+
         unlink($file);
     }
 
@@ -87,12 +87,10 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
         $x = serialize($d);
         $x = unserialize($x);
 
-        $this->assertEquals($d->getDocumentCount(), $x->getDocumentCount());
         $this->assertEquals($d->getMaximalTokenLength(), $x->getMaximalTokenLength());
         $this->assertEquals($d->getMinimalTokenLength(), $x->getMinimalTokenLength());
         $this->assertEquals($d->getTokenCount(), $x->getTokenCount());
         $this->assertEquals($d->getUsableTokenCount(), $x->getUsableTokenCount());
-        $this->assertEquals($d->useDocumentCount(), $x->useDocumentCount());
         $this->assertEquals($d->dump(), $x->dump());
     }
 
