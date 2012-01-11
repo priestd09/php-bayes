@@ -228,32 +228,6 @@ class Dictionary implements \Serializable
     }
 
     /**
-     * Gets minimal frequency in document for token to be included.
-     * For example, if this is 0.1, then all tokens found in less than 1 doc of
-     * 10 will be not taken in account
-     * @return double
-     */
-    public function getMinimalFrequencyInDocuments()
-    {
-        return $this->minimalFrequencyInDocuments;
-    }
-
-    /**
-     * Sets minimal frequency in document for token to be included.
-     * For example, if this is 0.1, then all tokens found in less than 1 doc of
-     * 10 will be not taken in account
-     * @var double $minimalFrequencyInDocuments
-     */
-    public function setMinimalFrequencyInDocuments($minimalFrequencyInDocuments)
-    {
-        $this->minimalFrequencyInDocuments = $minimalFrequencyInDocuments;
-
-        if ($this->useDocumentCount()) {
-            $this->recount();
-        }
-    }
-
-    /**
      * Gets minimal token length
      * @return integer
      */
