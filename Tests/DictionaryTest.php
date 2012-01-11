@@ -22,6 +22,13 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(array('bar' => array('count' => 2, 'weight' => 2/5),
             'buzz' => array('count' => 3, 'weight' => 3/5)), $d->dump());
+
+        $t->fromArray(array('bar' => 5, 'buzz' => 6));
+
+        $d->addTokens($t);
+
+        $this->assertEquals(array('bar' => array('count' => 7, 'weight' => 7/16),
+            'buzz' => array('count' => 9, 'weight' => 9/16)), $d->dump());
     }
 
     public function testSaving()
@@ -148,6 +155,15 @@ class DictionaryTest extends PHPUnit_Framework_TestCase
             'at' => array('count' => 1, 'weight' => 0),
             'so' => array('count' => 1, 'weight' => 0),
             'is' => array('count' => 1, 'weight' => 0)), $d->dump());
+    }
+
+    public function testStopwordsCritical()
+    {
+        $this->setExpectedException('RuntimeException');
+        
+        $d = new Noop\Bayes\Dictionary\Dictionary();
+
+        $d->loadStopwords(array('boo', 'foo'));
     }
 
 }
