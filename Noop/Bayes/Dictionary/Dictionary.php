@@ -18,14 +18,6 @@ class Dictionary implements \Serializable
     protected $dictionary;
 
     /**
-     * Minimal frequency in document for token to be included.
-     * For example, if this is 0.1, then all tokens found in less than 1 doc of
-     * 10 will be not taken in account
-     * @var double
-     */
-    protected $minimalFrequencyInDocuments;
-
-    /**
      * Minimal token length to be processed
      * @var integer
      */
@@ -55,13 +47,19 @@ class Dictionary implements \Serializable
      */
     protected $stopwords;
 
+    /**
+     * Minimal count of token occurencies for it to have meaning
+     * @var type
+     */
+    protected $minimalTokenCount;
+
     public function __construct()
     {
         $this->dictionary = array();
         $this->tokenCount = 0;
-        $this->minimalFrequencyInDocuments = 0.05;
         $this->minimalTokenLength = 3;
         $this->maximalTokenLength = 16;
+        $this->minimalTokenCount = 1;
         $this->stopwords = array();
     }
 
@@ -155,6 +153,12 @@ class Dictionary implements \Serializable
 
             // skip stopwords
             if (in_array($token, $this->stopwords)) {
+                $this->dictionary[$token]['weight'] = 0;
+                continue;
+            }
+
+            // skip stopwords
+            if ($this->dictionary[$token]['count'] < $this->getMinimalTokenCount()) {
                 $this->dictionary[$token]['weight'] = 0;
                 continue;
             }
@@ -281,6 +285,25 @@ class Dictionary implements \Serializable
     public function getUsableTokenCount()
     {
         return $this->usableTokenCount;
+    }
+
+    /**
+     * Get minimal count of tokens to be evaluated
+     * @return integer
+     */
+    public function getMinimalTokenCount()
+    {
+        return $this->minimalTokenCount;
+    }
+
+    /**
+     * Set minimal count of tokens to be evaluated
+     * @param integer $minimalTokenCount
+     */
+    public function setMinimalTokenCount($minimalTokenCount)
+    {
+        $this->minimalTokenCount = $minimalTokenCount;
+        $this->recount();
     }
 
 
