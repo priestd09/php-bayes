@@ -19,7 +19,19 @@ xsites_log('Matching now');
 $tokenizer = new Noop\Bayes\Tokenizer\Html;
 $tokenizer->setPolicy(MATCH_POLICY);
 
-foreach ($dic as $site) {
+foreach (array_slice($dic, floor(count($dic) / 2)) as $site) {
+    $contents = xsites_get_site($site);
+    if ($contents == '' && strlen($contents) < 1000) {
+        //xsites_log('Site not responsible, skipping');
+    } else {
+        xsites_log('Matching "%s"', $site);
+        printf('Probability: %.6f'.PHP_EOL, $bayes_dic->match($tokenizer->tokenize($contents)));
+    }
+}
+
+xsites_log('Matching common sites');
+
+foreach (array('rus.delfi.lv', 'youtube.com', 'google.com', 'wikipedia.com') as $site) {
     $contents = xsites_get_site($site);
     if ($contents == '' && strlen($contents) < 1000) {
         //xsites_log('Site not responsible, skipping');

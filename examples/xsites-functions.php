@@ -20,7 +20,7 @@ function xsites_get_dictionary() {
     $tokenizer->setPolicy(DICTIONARY_POLICY);
 
     // use half of sites
-    foreach (array('tube8.com', 'youporn.com', 'redtube.com', 'extremetube.com') as $site) {
+    foreach (array_slice($dic, 0, floor(count($dic) / 2)) as $site) {
         $contents = xsites_get_site($site);
 
         if($contents != '') {
